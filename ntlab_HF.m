@@ -57,3 +57,15 @@ AdB_K = -[36.24, 39.74, 47.40, 52.88, 41.5, 37.14, 34.84, 33.62, 33.22, 33.61, 3
 figure 3
 plot(z, AdB_K)
 grid on
+
+% Kurzschluss
+lambda = 0.107;
+bet = (2*pi) / lambda;
+z = linspace(-15, 0, 10000);
+
+m_ideal = abs(sin(bet*z));
+
+figure 4
+plot(z, m_ideal)
+xlim([-lambda, 0])
+grid on
