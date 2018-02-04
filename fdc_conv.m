@@ -15,7 +15,7 @@ ylim([0, 1.2])
 grid on
 print('fdc_signal','-dpng')
 
-for ii = 1 : 1 : 2
+for ii = 1 : 1 : 3
 	y = conv(x, h) * s;
 	x = y;
 	N = size(y, 2);
@@ -30,4 +30,4 @@ xlabel('time in seconds')
 grid on
 print('fdc_conv2','-dpng')
 
-close all
+%close all
