@@ -38,7 +38,7 @@ sm = sm(:, rsm);
 labels = [repmat(1, 1, Pm1*N), repmat(2, 1, Pm2*N), repmat(3, 1, Pm3*N)];
 labels = labels(:, rsm);
 
-% loop the power
+% snr loop
 for snr = -4 : 1 : 12;
   snr_lin = 10.^(snr/10);
 
@@ -72,13 +72,12 @@ Pe_ml
 Pe_map
 
 % calc. approx. error probability
-% nearest neighbors Ne
 Ne = 2;
-
 snr = -4 : 1 : 12;
 snr_lin = 10.^(snr/10);
 Pe_apx = Ne * qfunc(sqrt(snr_lin));
 
+% plot
 figure 2;
 semilogy(snr, Pe_apx, 'k--');
 hold on;
