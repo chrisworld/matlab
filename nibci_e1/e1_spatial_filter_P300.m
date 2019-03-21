@@ -28,7 +28,6 @@ t_plot = 0 : 1/fs : (n_plot_samples-1)/fs;
 n_plot_samples = int16(n_plot_samples);
 
 
-
 % Electrode indices
 % Fz 
 AFz_index = 7;  % anterior
@@ -57,31 +56,16 @@ Cz_art_bip = art(Cz_index, :) - art(FC2_index, :);
 Oz_art_bip = art(Oz_index, :) - art(POz_index, :);
 
 % laplace filter 
-Fz_art_lap = art(Fz_index) - 1/4 * (art(AFz_index, :) + art(FC2_index, :) + art(F2_index, :) + art(F1_index, :) );
-Cz_art_lap = art(Cz_index) - 1/4 * (art(FC2_index, :) + art(CPz_index, :) + art(C2_index, :) + art(C1_index, :) );
-Oz_art_lap = art(Oz_index) - 1/4 * (art(POz_index, :) + art(Iz_index, :) + art(O2_index, :) + art(O1_index, :) );
+Fz_art_lap = art(Fz_index, :) - 1/4 * ( art(AFz_index, :) + art(FC2_index, :) + art(F2_index, :) + art(F1_index, :) );
+Cz_art_lap = art(Cz_index, :) - 1/4 * ( art(FC2_index, :) + art(CPz_index, :) + art(C2_index, :) + art(C1_index, :) );
+Oz_art_lap = art(Oz_index, :) - 1/4 * ( art(POz_index, :) + art(Iz_index, :) + art(O2_index, :) + art(O1_index, :) );
 
 % CAR filter
 % laplace filter 
 mean_artefacts = mean(art);
-Fz_art_car = art(Fz_index) - mean_artefacts;
-Cz_art_car = art(Cz_index) - mean_artefacts;
-Oz_art_car = art(Oz_index) - mean_artefacts;
-
-% all for one solution, but im stupid.
-%a_p_offset = 5;
-%art_bip = zeros(n_channels / 2, n_samples);
-%ch_index = 1;
-%ch_bip_index = 1;
-%while ch_index < n_channels/2,
-%    for i = 1:a_p_offset
-%        for sample_index = 1:n_samples
-%            art_bip(ch_bip_index, sample_index) = art(ch_index + i, sample_index) - art(ch_index + i + a_p_offset, sample_index);
-%        end
-%        ch_bip_index = ch_bip_index + 1;
-%    end
-%    ch_index = ch_index + a_p_offset;
-%end
+Fz_art_car = art(Fz_index, :) - mean_artefacts;
+Cz_art_car = art(Cz_index, :) - mean_artefacts;
+Oz_art_car = art(Oz_index, :) - mean_artefacts;
 
 % plot to compare between artefacts and
 figure(1)
@@ -93,6 +77,9 @@ title('Bipolar filter on Fz electrode')
 xlabel('time / s')
 ylabel('Volt / mV')
 legend('non-filtered', 'filtered')
+xlim([17 19])
+ylim([-80 90])
+print('filter_bipolar','-dpng')
 
 % plot to compare between artefacts and
 figure(2)
@@ -104,6 +91,9 @@ title('Laplacian filter on Fz electrode')
 xlabel('time / s')
 ylabel('Volt / mV')
 legend('non-filtered', 'filtered')
+xlim([17 19])
+ylim([-80 90])
+print('filter_laplacian','-dpng')
 
 % plot to compare between artefacts and
 figure(3)
@@ -115,7 +105,9 @@ title('CAR filter on Fz electrode')
 xlabel('time / s')
 ylabel('Volt / mV')
 legend('non-filtered', 'filtered')
-
+xlim([17 19])
+ylim([-80 90])
+print('filter_car','-dpng')
 %plot(t_plot, Fz_art_lap(1:n_plot_samples), '-r')
 %plot(t_plot, Fz_art_car(1:n_plot_samples), '-g')
 
