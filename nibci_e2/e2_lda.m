@@ -58,11 +58,13 @@ std_c2 = [0.9 0.7];
 % create samples
 train_c1 = mu_c1 + std_c1 .* randn(n_train_c1, 2); 
 train_c2 = mu_c2 + std_c2 .* randn(n_train_c2, 2); 
+test_c1 = mu_c1 + std_c1 .* randn(n_test_c1, 2); 
+test_c2 = mu_c2 + std_c2 .* randn(n_test_c2, 2); 
 
 figure(20)
-scatter(train_c1(:, 1), train_c1(:, 2), 'b', 'x')
+scatter(test_c1(:, 1), test_c1(:, 2), 'b', 'x')
 hold on
-scatter(train_c2(:, 1), train_c2(:, 2), 'r', 'x')
+scatter(test_c2(:, 1), test_c2(:, 2), 'r', 'x')
 title('Distribution of data')
 xlabel('x')
 ylabel('y')
