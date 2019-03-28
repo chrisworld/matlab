@@ -23,6 +23,17 @@ mean_targets = mean(targets, 3);
 std_non_targets = std(non_targets, 0, 3);
 std_targets = std(targets, 0, 3);
 
+% wilcoxon
+alpha = 0.01;
+wilcoxon = [0 0 0];
+for i = 1:length(ch_selection)
+  wilcoxon(i) = ranksum(mean_targets(i,:), mean_non_targets(i,:), 'alpha', alpha);
+end
+% print wilcoxon
+ch_selection
+wilcoxon
+
+
 % print everything
 for i = 1:length(ch_selection)
   figure(1+i)
@@ -61,6 +72,7 @@ train_c2 = mu_c2 + std_c2 .* randn(n_train_c2, 2);
 test_c1 = mu_c1 + std_c1 .* randn(n_test_c1, 2); 
 test_c2 = mu_c2 + std_c2 .* randn(n_test_c2, 2); 
 
+% plot the stuff
 figure(20)
 scatter(test_c1(:, 1), test_c1(:, 2), 'b', 'x')
 hold on
@@ -70,3 +82,12 @@ xlabel('x')
 ylabel('y')
 legend('class 1', 'class2')
 grid on
+
+%% lda classifier
+w = zeros(2, 1)
+b = 0
+covM = [[std_c1] [0 0]; [0 0] [std_c2]]
+w =  (mu_c1 - mu_c2)
+%b = w * [mu_c1 mu_c2]
+
+
