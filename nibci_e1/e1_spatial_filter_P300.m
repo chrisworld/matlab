@@ -74,8 +74,8 @@ hold on
 %plot(t_plot, art(AFz_index, 1:n_plot_samples), '-g')
 plot(t_plot, Fz_art_bip(1:n_plot_samples), '-r')
 title('Bipolar filter on Fz electrode')
-xlabel('time / s')
-ylabel('Volt / mV')
+xlabel('time [s]')
+ylabel('Volt [mV]')
 legend('non-filtered', 'filtered')
 xlim([17 19])
 ylim([-80 90])
@@ -88,8 +88,8 @@ hold on
 %plot(t_plot, art(AFz_index, 1:n_plot_samples), '-g')
 plot(t_plot, Fz_art_lap(1:n_plot_samples), '-r')
 title('Laplacian filter on Fz electrode')
-xlabel('time / s')
-ylabel('Volt / mV')
+xlabel('time [s]')
+ylabel('Volt [mV]')
 legend('non-filtered', 'filtered')
 xlim([17 19])
 ylim([-80 90])
@@ -102,18 +102,14 @@ hold on
 %plot(t_plot, art(AFz_index, 1:n_plot_samples), '-g')
 plot(t_plot, Fz_art_car(1:n_plot_samples), '-r')
 title('CAR filter on Fz electrode')
-xlabel('time / s')
-ylabel('Volt / mV')
+xlabel('time [s]')
+ylabel('Volt [mV]')
 legend('non-filtered', 'filtered')
 xlim([17 19])
 ylim([-80 90])
 print('filter_car','-dpng')
-%plot(t_plot, Fz_art_lap(1:n_plot_samples), '-r')
-%plot(t_plot, Fz_art_car(1:n_plot_samples), '-g')
 
 
-
-%{
 
 %% P300
 clear all
@@ -136,18 +132,18 @@ mean_targets = mean(targets, 3);
 
 % print everything
 for i = 1:length(ch_selection)
-    figure(1+i)
+    figure(10+i)
     plot(t, mean_targets(i,:), '-b')
     hold on 
     plot(t, mean_non_targets(i,:), '--r')
     title(ch_selection(i))
-    xlabel('time / s')
-    ylabel('Volt / µV')
+    xlabel('time [s]')
+    ylabel('Volt [uV]')
     legend('target', 'non-target')
+    ylim([-6 8])
     print(['P300_' char(ch_selection(i))],'-dpng')
 end
 
-%}
 
 
 
