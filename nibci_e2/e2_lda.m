@@ -23,42 +23,60 @@ mean_targets = mean(targets, 3);
 std_non_targets = std(non_targets, 0, 3);
 std_targets = std(targets, 0, 3);
 
-% wilcoxon
-alpha = 0.01;
-wilcoxon = zeros(size(targets, 2), 1);
-ch = 1 % Fz
-for i = 1:size(mean_targets, 2)
-  wilcoxon(i) = ranksum(squeeze(targets(ch, i, :)), squeeze(non_targets(ch, i, :)), 'alpha', alpha) / size(targets, 3);
-end
-
-% print wilcoxon
-%ch_selection;
-%wilcoxon;
-
-figure(10)
-hold on
-%plot(mean_targets(ch, :), '-b')
-plot(wilcoxon(:), '-g')
-
 % print everything
 %%{
 for i = 1:length(ch_selection)
   figure(1+i)
   hold on 
-  plot(t, mean_targets(i,:), '-b')
-  plot(t, mean_targets(i,:) + std_targets(i,:), '--b')
-  plot(t, mean_targets(i,:) - std_targets(i,:), '--b')
-  plot(t, mean_non_targets(i,:), '-r')
-  %plot(t, mean_non_targets(i,:) + std_non_targets(), '--r')
-  %plot(t, std_targets(i,:), '-g')
-  %plot(t, std_non_targets(i,:), '--y')
+  plot(mean_targets(i,:), '-b', 'LineWidth', 1.5)
+  plot(mean_targets(i,:) + std_targets(i,:), '--b')
+  plot(mean_targets(i,:) - std_targets(i,:), '--b')
+  plot(mean_non_targets(i,:), '-r', 'LineWidth', 1.5)
+  plot(mean_non_targets(i,:) + std_non_targets(i,:), '--r')
+  plot(mean_non_targets(i,:) - std_non_targets(i,:), '--r')
+  hold off
+  ylim([-15 20])
   title(ch_selection(i))
-  xlabel('time [s]')
-  ylabel('Volt [ÂµV]')
-  legend('target mean', 'non-target mean', 'target std',  'non-target std')
-  %print(['P300_' char(ch_selection(i))],'-dpng')
+  xlabel('Samples')
+  ylabel('Volt [µV]')
+  legend('target mean', 'target + std', 'target - std', 'non-target mean', 'non-target + std', 'non-target - std')
+  print(['P300_std_' char(ch_selection(i))],'-dpng')
 end
 %}
+
+% wilcoxon params
+alpha = 0.01 / size(targets, 3);
+wilcoxon = zeros(size(targets, 2), 1);
+
+% wilcoxon for each channel
+for ch = 1:length(ch_selection)
+    
+    % calculate wilcoxon test over all trials for each sample
+    for sample = 1:size(mean_targets, 2)
+      wilcoxon(sample) = ranksum(squeeze(targets(ch, sample, :)), squeeze(non_targets(ch, sample, :)), 'alpha', alpha);
+    end
+
+    % significance of mean targets
+    signi = zeros(size(targets, 2), 1);
+    idx = find((wilcoxon <= alpha));
+    signi(idx) = mean_targets(ch, idx);
+    
+    % plot
+    figure(10 + ch)
+    hold on
+    plot(mean_targets(ch, :), '-b')
+    plot(mean_non_targets(ch,:), '-r')
+    stem(signi, '-g', 'MarkerSize', 4)
+    hold off
+    ylim([-6 8])
+    title(ch_selection(ch))
+    xlabel('Samples')
+    ylabel('Volt [µV]')
+    legend('target mean', 'non-target mean', 'significance' )
+    print(['P300_signi_' char(ch_selection(ch))],'-dpng')
+end
+
+
 
 %% LDA
 % number of samples
