@@ -33,6 +33,3 @@ b = w' * mu_est;
 output_class = sign(w' * test_set' - b)';
 
 end
-
-% create samples
-%train_labels = [ones(n_train_c1, 1); -ones(n_train_c2, 1)];
