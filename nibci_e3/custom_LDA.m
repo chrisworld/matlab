@@ -1,15 +1,18 @@
 %
-% -- LDA function (self defines)
+% -- LDA function (self defined)
 %     only tested 2-dimensional data
 %     no fancy safety stuff done
 %     typical call :
-%       [output_class, w, b, mu_est] = custom_LDA(train_set, train_labels, test_set);
+%       [output_class, w, b, mu_est] = custom_LDA(train_set, train_labels);
 
-function [w, b, mu_est] = custom_LDA(train_set, train_labels, test_set)
+function [w, b, mu_est] = custom_LDA(train_set, train_labels)
 
-% split in the two classes
-train_c1 = train_set(train_labels == 1, :);
-train_c2 = train_set(train_labels == -1, :);
+% find class labels
+class_labels = unique(train_labels);
+
+% split into the two classes for training
+train_c1 = train_set(train_labels == class_labels(2), :);
+train_c2 = train_set(train_labels == class_labels(1), :);
 
 %% lda classifier parameters
 w = zeros(2, 1);
@@ -20,7 +23,6 @@ b = 0;
 covM_c = 1 / 2 * ( diag(std(train_c1)).^2 + diag(std(train_c2)).^2 );
 
 % weights
-%w = inv(covM_c) * (mu_c1 - mu_c2)'
 w = inv(covM_c) * (mean(train_c1) - mean(train_c2))';
 
 % estimated mean
@@ -30,6 +32,3 @@ mu_est = (mean(train_c1) + mean(train_c2))' / 2;
 b = w' * mu_est;
 
 end
-
-% create samples
-%train_labels = [ones(n_train_c1, 1); -ones(n_train_c2, 1)];
