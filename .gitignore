@@ -1,2 +1,4 @@
 *.png
 octave*
+ssp_examples/
+*.zip

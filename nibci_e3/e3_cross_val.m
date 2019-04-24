@@ -170,6 +170,7 @@ score_averaged_total = sum(sum(score_pool)) / (n_repeat * k_fold)
 
 % -----
 % find best score parameter and test it with whole dataset
+% this I did additional
 best_score = max(max(score_pool))
 best_param_idx = find(score_pool == best_score)(1)
 best_param = param_pool(best_param_idx, :)
@@ -199,7 +200,7 @@ accuracy = correct_pred / length(output_class)
 
 
 % -----
-% My previous computations (in Exercise 2):
+% My previous computations (in Exercise 2) for comparison:
 % create train set
 train_targets = squeeze(targets(ch, signi_idx, 1:200))';
 train_non_targets = squeeze(non_targets(ch, signi_idx, 1:1000))';
