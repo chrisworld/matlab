@@ -3,6 +3,8 @@ clear all;
 close all;
 clc
 
+% octave packages
+pkg load signal
 
 % signal parameters
 A = [1 1 1];
@@ -14,16 +16,17 @@ fs = 100
 
 t_len = 100
 % faster, but less accurate:
-t_len = 10
+%t_len = 10
 
 Ts = 1 / fs 
 
 % time and frequency vector
 t_x = 0 : Ts : t_len;
-f_x = 0 : fs / length(t_x) : fs - fs / length(t_x);
+N = length(t_x)
+f_x = -fs / 2 : fs / N : fs / 2 - fs / N;
 
 % create signals
-s = zeros(length(A), length(t_x));
+s = zeros(length(A), N);
 for idx = 1 : size(s, 1)
   s(idx, :) = A(idx) * sin(2 * pi * f(idx) * t_x + fii(idx));
 end
@@ -34,7 +37,7 @@ s_sum = sum(s);
 
 % DFT
 %tic
-S_SUM = custom_dft(s_sum);
+S_SUM = fftshift(custom_dft(s_sum));
 %toc
 
 % IDFT
@@ -49,11 +52,11 @@ y_lim_time = [-3 3];
 
 % %{
 figure 1
-plot(f_x, abs(S_SUM))
+plot(f_x(N / 2 + 1 : end), abs(S_SUM( N / 2 + 1 : end)))
 grid on
 ylabel('Amplitude')
 xlabel('Frequency [Hz]')
-%print('DFT_signals', '-dpng')
+print('DFT_signals', '-dpng')
 
 % %{
 figure 2
@@ -89,18 +92,18 @@ t_x_down = downsample(t_x, down_sample_factor);
 % %{
 
 % DFT
-S_SUM_DOWN = custom_dft(s_sum_down);
+S_SUM_DOWN = fftshift(custom_dft(s_sum_down));
 
 % IDFT
 s_sum_down_idft = custom_idft(S_SUM_DOWN);
 
 
 figure 4
-plot(f_x_down, abs(S_SUM_DOWN))
+plot(f_x_down(length(f_x_down) / 2 + 1 : end), abs(S_SUM_DOWN(length(f_x_down) / 2 + 1 : end)))
 grid on
 ylabel('Amplitude')
 xlabel('Frequency [Hz]')
-%print('DFT_down', '-dpng')
+print('DFT_down', '-dpng')
 
 % %{
 figure 5
@@ -131,8 +134,8 @@ y_down = downsample(y, down_sample_factor);
 %freqz(h, 1)
 
 % DFT
-Y = custom_dft(y);
-Y_DOWN = custom_dft(y_down);
+Y = fftshift(custom_dft(y));
+Y_DOWN = fftshift(custom_dft(y_down));
 
 % IDFT
 y_idft = custom_idft(Y);
@@ -141,11 +144,11 @@ y_down_idft = custom_idft(Y_DOWN);
 
 % %{
 figure 6
-plot(f_x, abs(Y))
+plot(f_x(N / 2 + 1 : end), abs(Y( N / 2 + 1 : end)))
 grid on
 ylabel('Amplitude')
 xlabel('Frequency [Hz]')
-%print('DFT_filter', '-dpng')
+print('DFT_filter', '-dpng')
 
 % %{
 figure 7
@@ -158,11 +161,12 @@ ylim(y_lim_time)
 %print('IDFT_filter', '-dpng')
 
 figure 8
-plot(f_x_down, abs(Y_DOWN))
+%plot(f_x_down, abs(Y_DOWN))
+plot(f_x_down(length(f_x_down) / 2 + 1 : end), abs(Y_DOWN(length(f_x_down) / 2 + 1 : end)))
 grid on
 ylabel('Amplitude')
 xlabel('Frequency [Hz]')
-%print('DFT_filter_down', '-dpng')
+print('DFT_filter_down', '-dpng')
 
 % %{
 figure 9
@@ -185,23 +189,21 @@ ylim(y_lim_time)
 % %{
 resample_factor = 2;
 s_sum_res = resample(s_sum, 1, resample_factor);
-f_x_res = resample(f_x, 1, resample_factor);
-t_x_res = resample(t_x, 1, resample_factor);
-
 
 % DFT
-S_SUM_RES = custom_dft(s_sum_res);
+S_SUM_RES = fftshift(custom_dft(s_sum_res));
 
 % IDFT
 s_sum_res_idft = custom_idft(S_SUM_RES);
 
 % %{
 figure 10
-plot(f_x_down, abs(S_SUM_RES))
+%plot(f_x_down, abs(S_SUM_RES))
+plot(f_x_down(length(f_x_down) / 2 + 1 : end), abs(S_SUM_RES(length(f_x_down) / 2 + 1 : end)))
 grid on
 ylabel('Amplitude')
 xlabel('Frequency [Hz]')
-%print('DFT_resample', '-dpng')
+print('DFT_resample', '-dpng')
 
 % %{
 figure 11
