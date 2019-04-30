@@ -33,8 +33,7 @@ signi_idx = find(wilcoxon(ch, :) == sorted_wilcoxon(1) | wilcoxon(ch, :) == sort
 
 
 % create trial datasets
-n_trials = [2, 5, 10];
-t = 2;
+n_trials = [3, 5, 10];
 
 % cross-validation params
 n_repeat = 10;
@@ -43,9 +42,13 @@ k_fold = 10;
 % run all trial sets
 for t = 1 : length(n_trials)
 
+  % determine if residual in trials
+  residual_t = mod(length(targets), n_trials(t))
+  residual_n = mod(length(non_targets), n_trials(t))
+
   % crazy one liners to average the trials
-  trial_targets = [mean(reshape(squeeze(targets(ch, signi_idx, :))(1,:), n_trials(t), [])); mean(reshape(squeeze(targets(ch, signi_idx, :))(2,:), n_trials(t), []))]';
-  trial_non_targets = [mean(reshape(squeeze(non_targets(ch, signi_idx, :))(1,:), n_trials(t), [])); mean(reshape(squeeze(non_targets(ch, signi_idx, :))(2,:), n_trials(t), []))]';
+  trial_targets = [mean(reshape(squeeze(targets(ch, signi_idx, 1:end-residual_t))(1,:), n_trials(t), [])); mean(reshape(squeeze(targets(ch, signi_idx, 1:end-residual_t))(2,:), n_trials(t), []))]';
+  trial_non_targets = [mean(reshape(squeeze(non_targets(ch, signi_idx, 1:end-residual_n))(1,:), n_trials(t), [])); mean(reshape(squeeze(non_targets(ch, signi_idx, 1:end-residual_n))(2,:), n_trials(t), []))]';
   trial_set = [trial_targets; trial_non_targets];
   trial_labels = [ones(length(trial_targets), 1) * 2; ones(length(trial_non_targets), 1)];
 
