@@ -6,3 +6,6 @@ clc;
 id = 32;
 
 [n, d_tilde] = func_sigGEN_HW2(id);
+
+%M = []
+
