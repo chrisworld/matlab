@@ -2,5 +2,7 @@ clear all;
 close all;
 clc;
 
-id = 1;
+% my id
+id = 32;
+
 [n, d_tilde] = func_sigGEN_HW2(id);
