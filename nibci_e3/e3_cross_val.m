@@ -34,6 +34,10 @@ n_repeat = 10;
 k_fold = 10;
 test_percent = 0.1;
 
+% test my custom functions
+[custom_L, w, b]= cross_val_10x10(train_set_samples, train_labels_samples)
+custom_L_test = cross_val_10x10(test_set_samples, test_labels_samples, w, b)
+
 score_pool = zeros(n_repeat, k_fold);
 param_pool = zeros(n_repeat * k_fold, 3);
 
@@ -59,17 +63,7 @@ for n = 1 : n_repeat
     % output 
     output_lda = sign(w' * val_set' - b)';
 
-    % map to class labels
-    class_labels = unique(train_labels);
-    output_class = zeros(size(output_lda));
-    output_class(output_lda == -1) = class_labels(1);
-    output_class(output_lda == 1) = class_labels(2);
-
-    % compute scores
-    score_text = ['- Artificial Samples classification - cross val fold: ' int2str(k)];
-    correct_pred = sum(output_class' == val_labels);
-    false_pred = length(output_class) - correct_pred;
-    accuracy = correct_pred / length(output_class);
+    accuracy = custom_score(output_lda, val_labels);
 
     % fill the score pool
     score_pool(n, k) = accuracy;
@@ -166,6 +160,11 @@ end
 % compute averaged scores of all repetitions
 score_text = ['----- P300 LDA classification cross-val averaged over all repetitions:']
 score_averaged_total = sum(sum(score_pool)) / (n_repeat * k_fold)
+
+% test my custom functions
+[custom_L, w, b] = cross_val_10x10(squeeze(segments(ch, signi_idx, :))', classlabels)
+custom_L = cross_val_10x10(squeeze(segments(ch, signi_idx, :))', classlabels, w, b)
+
 
 
 % -----

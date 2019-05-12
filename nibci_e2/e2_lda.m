@@ -6,6 +6,8 @@ clc
 % load data
 load BI5_segments_HTS.mat
 
+pkg load statistics
+
 %% std
 % separate in target and non-target tones
 n_non_targets = sum(classlabels == 1);
@@ -24,7 +26,7 @@ std_non_targets = std(non_targets, 0, 3);
 std_targets = std(targets, 0, 3);
 
 % print everything
-% %{
+ %{
 for i = 1:length(ch_selection)
   figure(1+i)
   hold on 
@@ -53,9 +55,9 @@ for ch = 1:length(ch_selection)
     
     % calculate wilcoxon test over all trials for each sample
     for sample = 1:size(mean_targets, 2)
-      wilcoxon(sample) = ranksum(squeeze(targets(ch, sample, :)), squeeze(non_targets(ch, sample, :)), 'alpha', alpha);
+      %wilcoxon(sample) = ranksum(squeeze(targets(ch, sample, :)), squeeze(non_targets(ch, sample, :)), 'alpha', alpha);
       % for octave
-      %wilcoxon(ch, sample) = wilcoxon_test(squeeze(targets(ch, sample, :)), squeeze(non_targets(ch, sample, 1:400)));
+      wilcoxon(ch, sample) = wilcoxon_test(squeeze(targets(ch, sample, :)), squeeze(non_targets(ch, sample, 1:400)));
     end
 
     % significance of mean targets
@@ -63,7 +65,7 @@ for ch = 1:length(ch_selection)
     idx = find((wilcoxon(ch, :) <= alpha));
     signi(idx) = mean_targets(ch, idx);
     
-    % %{
+     %{
     % plot
     figure(10 + ch)
     hold on
@@ -109,6 +111,8 @@ test_labels = [ones(n_test_c1, 1); -ones(n_test_c2, 1)];
 %% lda classifier
 [output_class, w, b, mu_est] = custom_LDA(train_set, train_labels, test_set);
 
+W = LDA(train_set, train_labels)
+
 % compute scores
 correct_pred = sum(output_class == test_labels)
 false_pred = length(output_class) - correct_pred
@@ -119,7 +123,7 @@ x = -2 : 1 : 5;
 k = -w(1)/w(2);
 d = mu_est(2) - k * mu_est(1);
 
-% %{
+ %{
 figure(20)
 scatter(test_c1(:, 1), test_c1(:, 2), 'b', 'x')
 hold on
@@ -146,7 +150,7 @@ ch = 2;
 sorted_wilcoxon = sort(wilcoxon(ch, :), 'ascend');
 signi_idx = find(wilcoxon(ch, :) == sorted_wilcoxon(1) | wilcoxon(ch, :) == sorted_wilcoxon(2));
 
-% %{
+ %{
 % plot the two most significant points in the P300
 figure(30)
 hold on
@@ -177,7 +181,7 @@ test_labels = [ones(length(test_targets), 1); -ones(length(test_non_targets), 1)
 % check if data is normal distributed
 dim_name = {"1.dim" "2.dim"};
 
-% %{
+ %{
 for dim = 1:2
   figure(31 + dim)
   normplot(test_targets(:, dim))
@@ -209,7 +213,7 @@ x = -20 : 1 : 25;
 k = -w(1)/w(2);
 d = mu_est(2) - k * mu_est(1);
 
-% %{
+ %{
 % plot the stuff
 figure(40)
 scatter(test_targets(:, 1), test_targets(:, 2), 'b', 'x')
