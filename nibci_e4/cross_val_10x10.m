@@ -3,7 +3,7 @@
 %     typical call :
 %       L = cross_val_10x10(X, Y);
 
-function [L, w, b] = cross_val_10x10(X, Y, w, b)
+function [L, K, w, b] = cross_val_10x10(X, Y, w, b)
 
 % determine if train or test
 is_train = 1;
@@ -14,8 +14,10 @@ end
 n_repeat = 10;
 k_fold = 10;
 
+n_features = size(X, 2);
+
 score_pool = zeros(n_repeat, k_fold);
-param_pool = zeros(n_repeat * k_fold, 3);
+param_pool = zeros(n_repeat * k_fold, n_features + 1);
 
 % randomize data
 RV = randperm(length(X));
@@ -54,4 +56,5 @@ for n = 1 : n_repeat
   score_pool_k_fold = sum(score_pool(n, :)) / k_fold;
 end
 
+K = score_pool;
 L = sum(sum(score_pool)) / (n_repeat * k_fold);

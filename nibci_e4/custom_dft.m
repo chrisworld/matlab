@@ -7,8 +7,8 @@
 function y = custom_dft(x) 
 
   % signal length
-  n_seg = size(x, 1)
-  N = size(x, 2)
+  n_seg = size(x, 1);
+  N = size(x, 2);
 
   % init
   y = zeros(size(x));
