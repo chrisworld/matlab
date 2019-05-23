@@ -54,6 +54,9 @@ end
 %}
 
 % SNR
+
+%snr = 10 * log10(var(s1) / var(p_v) )
+
 p_s1 = sqrt(mean(s1 .* s1));
 p_s2 = sqrt(mean(s2 .* s2));
 p_v = sqrt(mean(v .* v, 2));
