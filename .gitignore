@@ -3,3 +3,7 @@ octave*
 ssp_examples/
 *.zip
 *.mat
+
+ERDS-Maps/
+gdf_reader/
+LDA/
