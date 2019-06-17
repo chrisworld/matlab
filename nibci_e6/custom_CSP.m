@@ -17,11 +17,10 @@ function [V_s, D_s] = custom_CSP(X)
   end
 
   % average covariance matrices
-  sigm1 = squeeze(mean(sigm(1 : n_trial / 2, :, :), 1));
-  sigm2 = squeeze(mean(sigm(n_trial / 2 + 1 : n_trial, :, :), 1));
+  sigm1 = squeeze(mean(sigm(1 : n_trial / 2, :, :)));
+  sigm2 = squeeze(mean(sigm(n_trial / 2 + 1 : n_trial, :, :)));
 
   % calculate eigenvalues
-  %[V, D] = eig(sigm1, sigm1 + sigm2, 'qz');
   [V, D] = eig(sigm1, sigm1 + sigm2);
 
   % sort eigenvalues according to magnitude in D

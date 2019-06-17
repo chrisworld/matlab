@@ -31,9 +31,7 @@ f_window_cue = [7, 30];
 s_band = zeros(size(Sig));
 
 % apply filter for each channel
-for ch = 1 : n_channels;
-  s_band(ch, :) = filtfilt(b_, a_, Sig(ch, :));
-end
+s_band = filtfilt(b_, a_, Sig')';
 
 % choose interesting time segments in samples
 samples_cue = [1.5, 2.5] * SR;
@@ -45,12 +43,12 @@ X = zeros(100, n_channels, 128);
 for ch = 1 : n_channels
   % create cues for class hand
   for trig = 1 : length(ClassPosH)
-    X(trig, ch, :) = s_band(ch, ClassPosH(trig)) + samples_cue(1) : s_band(ch, ClassPosH(trig)) + samples_cue(2) - 1;
+    X(trig, ch, :) = s_band(ch, ClassPosH(trig) + samples_cue(1) : ClassPosH(trig) + samples_cue(2) - 1);
   end
 
   % create cues for class feet
   for trig = 1 : length(ClassPosF)
-    X(trig + 50, ch, :) = s_band(ch, ClassPosF(trig)) + samples_cue(1) : s_band(ch, ClassPosF(trig)) + samples_cue(2) - 1;
+    X(trig + 50, ch, :) = s_band(ch, ClassPosF(trig) + samples_cue(1) : ClassPosF(trig) + samples_cue(2) - 1);
   end
 end
 
@@ -74,12 +72,12 @@ X_csp = zeros(100, 4, 128);
 for ch = 1 : 4
   % create cues for class hand
   for trig = 1 : length(ClassPosH)
-    X_csp(trig, ch, :) = s_csp(ch, ClassPosH(trig)) + samples_cue(1) : s_csp(ch, ClassPosH(trig)) + samples_cue(2) - 1;
+    X_csp(trig, ch, :) = s_csp(ch, ClassPosH(trig) + samples_cue(1) : ClassPosH(trig) + samples_cue(2) - 1);
   end
 
   % create cues for class feet
   for trig = 1 : length(ClassPosF)
-    X_csp(trig + length(ClassPosH), ch, :) = s_csp(ch, ClassPosF(trig)) + samples_cue(1) : s_csp(ch, ClassPosF(trig)) + samples_cue(2) - 1;
+    X_csp(trig + length(ClassPosH), ch, :) = s_csp(ch, ClassPosF(trig) + samples_cue(1) : ClassPosF(trig) + samples_cue(2) - 1);
   end
 end
 
@@ -109,9 +107,7 @@ load('ClassPosFVal.mat')
 s_band_val = zeros(size(SigVal));
 
 % apply filter for each channel
-for ch = 1 : n_channels;
-  s_band_val(ch, :) = filtfilt(b_, a_, SigVal(ch, :));
-end
+s_band_val = filtfilt(b_, a_, SigVal')';
 
 % score pool
 score_pool = zeros(1, 5);
@@ -122,7 +118,7 @@ for n_csp = 2 : 7;
   C = [V_s(:, 1 : n_csp), V_s(:, 15 - n_csp : 15)];
 
   % CSP filtering
-  s_csp = C' * s_band_val;
+  s_csp_val = C' * s_band_val;
 
   % data matrix CSP
   X_csp = zeros(60, 4, 128);
@@ -131,12 +127,12 @@ for n_csp = 2 : 7;
   for ch = 1 : 4
     % create cues for class hand
     for trig = 1 : length(ClassPosHVal)
-      X_csp(trig, ch, :) = s_csp(ch, ClassPosHVal(trig)) + samples_cue(1) : s_csp(ch, ClassPosHVal(trig)) + samples_cue(2) - 1;
+      X_csp(trig, ch, :) = s_csp_val(ch, ClassPosHVal(trig) + samples_cue(1) : ClassPosHVal(trig) + samples_cue(2) - 1);
     end
 
     % create cues for class feet
     for trig = 1 : length(ClassPosFVal)
-      X_csp(trig + length(ClassPosHVal), ch, :) = s_csp(ch, ClassPosFVal(trig)) + samples_cue(1) : s_csp(ch, ClassPosFVal(trig)) + samples_cue(2) - 1;
+      X_csp(trig + length(ClassPosHVal), ch, :) = s_csp_val(ch, ClassPosFVal(trig) + samples_cue(1) : ClassPosFVal(trig) + samples_cue(2) - 1);
     end
   end
 
