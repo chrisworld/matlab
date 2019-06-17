@@ -31,14 +31,14 @@ f_borders = [4, 30];
 t_ref = [-2.5, -0.5];
 
 % calculate erds maps
-%{
-erds_maps_c1 = calcErdsMap(sGes_train, hGes_train, t, f_borders, 'ref', t_ref, 'sig', 'boot', 'alpha', 0.01, 'class', 1);
-erds_maps_c2 = calcErdsMap(sGes_train, hGes_train, t, f_borders, 'ref', t_ref, 'sig', 'boot', 'alpha', 0.01, 'class', 2);
-save('erds_maps.mat', 'erds_maps_c1', 'erds_maps_c2');
+%%{
+erds_maps_c1 = calcErdsMap(sGes_train(:, 3), hGes_train, t, f_borders, 'ref', t_ref, 'sig', 'boot', 'alpha', 0.01, 'class', 1);
+erds_maps_c2 = calcErdsMap(sGes_train(:, 3), hGes_train, t, f_borders, 'ref', t_ref, 'sig', 'boot', 'alpha', 0.01, 'class', 2);
+%save('erds_maps.mat', 'erds_maps_c1', 'erds_maps_c2');
 %}
 
 % load pre calculated erds_maps
-load('erds_maps.mat')
+%load('erds_maps.mat')
 
 % plot erds maps
 plotErdsMap(erds_maps_c1);

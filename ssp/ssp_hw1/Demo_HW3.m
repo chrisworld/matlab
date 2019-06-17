@@ -24,7 +24,7 @@ PS = [-60 30];
 figure, hold on, set(gca,'FontSize',26),set(gcf,'Color','White');  
 plot(PS(:,1),PS(:,2),'or','LineWidth',2)
 plot(XYmic(:,1),XYmic(:,2),'ok','LineWidth',2)
-TMP = 100*exp(1i*linspace(0,2*pi));
+TMP = 100*exp(i*linspace(0,2*pi));
 plot(real(TMP),imag(TMP),'--k','LineWidth',1)
 axis(120*[-1 1 -1 1 ])
 grid on

@@ -25,14 +25,14 @@ class_feet = 2;
 % band pass filtering
 filter_order = 4;
 f_window_cue = [7, 30];
-[b, a] = butter(filter_order, f_window_cue / (SR / 2));
+[b_, a_] = butter(filter_order, f_window_cue / (SR / 2));
 
 % container for filtered signal
 s_band = zeros(size(Sig));
 
 % apply filter for each channel
 for ch = 1 : n_channels;
-  s_band(ch, :) = filtfilt(b, a, Sig(ch, :));
+  s_band(ch, :) = filtfilt(b_, a_, Sig(ch, :));
 end
 
 % choose interesting time segments in samples
@@ -110,7 +110,7 @@ s_band_val = zeros(size(SigVal));
 
 % apply filter for each channel
 for ch = 1 : n_channels;
-  s_band_val(ch, :) = filtfilt(b, a, SigVal(ch, :));
+  s_band_val(ch, :) = filtfilt(b_, a_, SigVal(ch, :));
 end
 
 % score pool
