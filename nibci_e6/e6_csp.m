@@ -3,6 +3,9 @@ close all;
 clear all;
 clc;
 
+% load packages for octave
+pkg load signal
+
 % load data
 load('Sig.mat')
 load('ClassPosH.mat')
@@ -51,30 +54,15 @@ for ch = 1 : n_channels
   end
 end
 
-% calculate separate spatial normalized covariance
-sigm = zeros(100, 15, 15);
-for trial = 1 : 100
-  XX_t = squeeze(X(trial, :, :)) * transpose(squeeze(X(trial, :, :)));
-  sigm(trial, :, :) = XX_t / trace(XX_t);
-end
-
-% average covariance matrices
-sigm1 = squeeze(mean(sigm(1:50, :, :), 1));
-sigm2 = squeeze(mean(sigm(51:100, :, :), 1));
-
-% calculate eigenvalues
-[V, D] = eig(sigm1, sigm1 + sigm2, 'qz');
-
-% sort eigenvalues according to magnitude in D
-[D_s, D_si] = sort(D * ones(15, 1));
-V_s = V(:, D_si);
+% get CSP filter matrix
+[V_s, D_s] = custom_CSP(X);
 
 
 % --
 % extract CSP and train LDA
 
 % use most important filters
-C = [V_s(:, 1), V_s(:, 2), V_s(:, 14), V_s(:, 15)];
+C = [V_s(:, 1 : 2), V_s(:, 14 : 15)];
 
 % CSP filtering
 s_csp = C' * s_band;
@@ -91,7 +79,7 @@ for ch = 1 : 4
 
   % create cues for class feet
   for trig = 1 : length(ClassPosF)
-    X_csp(trig + 50, ch, :) = s_csp(ch, ClassPosF(trig)) + samples_cue(1) : s_csp(ch, ClassPosF(trig)) + samples_cue(2) - 1;
+    X_csp(trig + length(ClassPosH), ch, :) = s_csp(ch, ClassPosF(trig)) + samples_cue(1) : s_csp(ch, ClassPosF(trig)) + samples_cue(2) - 1;
   end
 end
 
@@ -105,11 +93,65 @@ y_train = [ones(1, length(ClassPosH)) * class_hand, ones(1, length(ClassPosF)) *
 [w, b] = custom_LDA(x_train, y_train);
 
 % compute scores on train and test set
+disp('Train score:')
 score_train = custom_score(sign(w' * x_train' - b), y_train)
 
 
 % --
-% 
+% Validation
+
+% load data
+load('SigVal.mat')
+load('ClassPosHVal.mat')
+load('ClassPosFVal.mat')
+
+% container for filtered signal
+s_band_val = zeros(size(SigVal));
+
+% apply filter for each channel
+for ch = 1 : n_channels;
+  s_band_val(ch, :) = filtfilt(b, a, SigVal(ch, :));
+end
+
+% score pool
+score_pool = zeros(1, 5);
+
+% compute csp scores
+for n_csp = 2 : 7;
+  % use most important filters
+  C = [V_s(:, 1 : n_csp), V_s(:, 15 - n_csp : 15)];
+
+  % CSP filtering
+  s_csp = C' * s_band_val;
+
+  % data matrix CSP
+  X_csp = zeros(60, 4, 128);
+
+  % epoch channels with csp filtering
+  for ch = 1 : 4
+    % create cues for class hand
+    for trig = 1 : length(ClassPosHVal)
+      X_csp(trig, ch, :) = s_csp(ch, ClassPosHVal(trig)) + samples_cue(1) : s_csp(ch, ClassPosHVal(trig)) + samples_cue(2) - 1;
+    end
+
+    % create cues for class feet
+    for trig = 1 : length(ClassPosFVal)
+      X_csp(trig + length(ClassPosHVal), ch, :) = s_csp(ch, ClassPosFVal(trig)) + samples_cue(1) : s_csp(ch, ClassPosFVal(trig)) + samples_cue(2) - 1;
+    end
+  end
+
+  % calculate band power
+  x_val = log10(sum(X_csp .^ 2, 3));
+
+  % get labels
+  y_val = [ones(1, length(ClassPosHVal)) * class_hand, ones(1, length(ClassPosFVal)) * class_feet];
+
+  % compute score
+  disp(['Val score: ', num2str(n_csp)])
+  score_val = custom_score(sign(w' * x_val' - b), y_val)
+end
+
+
 
 % Laplacian to compare
 % accuracy 85%
