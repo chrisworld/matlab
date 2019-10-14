@@ -1,6 +1,9 @@
 clear variables
 close all
 
+% load packages for octave
+pkg load signal
+
 % plot config
 fig_size_long = [0, 0, 900, 400];
 
@@ -65,7 +68,12 @@ A_est_log = 10^(beta_log / 20)
 % read in files
 
 filepath = "./angabe/";
-filenames = ["drumloop.wav"; "trumpet.wav"];
+
+filenames = ['drumloop';];
+%filenames = ['trumped';];
+
+file_ext = '.wav';
+
 
 % --
 % analyze audio files
@@ -76,11 +84,10 @@ segment_len = 256
 for file_idx = 1 : length(filenames)
 
   % read file
-  [x, fs] = wavread([filepath, filenames(file_idx, :)]);
+  [x, fs] = wavread([filepath, filenames(file_idx, :), file_ext]);
 
   % transform signal
-  N = length(x)
-  %H = compFreq([0:N-1]', N);
+  N = length(x);
   X = fft(x); 
   Y = 20 * log10(2 / N * abs(X(1:end/2+1)));
 
@@ -93,16 +100,19 @@ for file_idx = 1 : length(filenames)
   figure(20 + file_idx, 'position', fig_size_long)
   plot(f, Y, 'LineWidth', 1.5)
   set(gca,'FontSize',12)
-  title(['file: ' filenames(file_idx, :)], 'fontsize', 18)
+  title([filenames(file_idx, :)], 'fontsize', 18)
   xlabel('Frequency f [Hz]', 'fontsize', 16)
   ylabel('Logarithmic Magnitude [dB]', 'fontsize', 16)
   grid on
-  %print(['signal_fft'],'-dpng', '-S900,400')
+  %print(['fft_', filenames(file_idx, :)],'-dpng', '-S900,400')
   %}
 
   % plots
-  figure 31
+  figure(30 + file_idx, 'position', fig_size_long)
   specgram(x, segment_len, fs);
+  %set(gca,'FontSize',12)
+  title([filenames(file_idx, :)], 'fontsize', 18)
+  print(['spec_', filenames(file_idx, :)],'-dpng', '-S900,400')
 
 end
 

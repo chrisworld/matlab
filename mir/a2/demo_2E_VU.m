@@ -69,15 +69,15 @@ legend({'k=0','k=1','k=2','k=3','k=4'})
 % --
 % Signalmodell
 
-k_test = 10.5;      % Wahl der digitalen Frequenz ident. mit Frequenz  einer Basisfunktion 
-% k_test = 10.35; % Wahl der digitalen Frequenz abweichend zu bestehenden Frequenzen der Basisfunktionen
+%k_test = 10;      % Wahl der digitalen Frequenz ident. mit Frequenz  einer Basisfunktion 
+k_test = 10.35; % Wahl der digitalen Frequenz abweichend zu bestehenden Frequenzen der Basisfunktionen
 x = cos(2*pi*k_test/N*[0:N-1]'); 
 
 
 % --
 % Signaltransformation
 
-X = H*x; % Kurzzeitfuriertransformation des Signalmodells in den Bildbereich
+X = H * x; % Kurzzeitfuriertransformation des Signalmodells in den Bildbereich
 
 % plot
 %%{
@@ -187,13 +187,15 @@ for k = 1.1 : 0.1 : 40
   % princarg(diff(phi)) % principal argument von phi(2.Frame)- phi(1.Frame), phi(3.Frame)- phi(2.Frame) usw.
   
   omega_k = 2 * pi * (p - 1) / N;
-  delta_phi = omega_k * R - princarg(phi(2) - phi(1) - omega_k*R);
-  freq_instphase = delta_phi / (2*pi*R) * fs; % instantaneous frequency at the next frame  
+  delta_phi = omega_k * R - princarg(phi(2) - phi(1) - omega_k * R);
+
+  % instantaneous frequency at the next frame  
+  freq_instphase = delta_phi / (2 * pi * R) * fs; 
   
-  erg(jj,1) = freq_target;
-  erg(jj,2) = freq_instphase;
+  erg(jj, 1) = freq_target;
+  erg(jj, 2) = freq_instphase;
   
-  jj = jj+1;
+  jj = jj + 1;
 end
 
 figure,plot(erg(:,1),erg(:,2),'LineWidth',2,'Color','r')
