@@ -2,12 +2,25 @@ clear all;
 close all;
 clc;
 
+% packages for octave
+pkg load control
+
 %
 % data
 
 load("./angabe/SSP_HW3_EX1.mat")
 % who
 
+% system params
+m = 1;
+c = 1;
+d = 0.1;
+
+% sampling
+fs = 100;
+Ts = 1/fs;
+
+%
 % analyze data
 %{
 figure 1
@@ -32,14 +45,6 @@ plot(y2, '-r')
 plot(y3, '-g')
 %}
 
-% system params
-m = 1;
-c = 1;
-d = 0.1;
-
-% sampling
-fs = 100;
-Ts = 1/fs;
 
 %
 % ordinary kalman filter
@@ -127,10 +132,65 @@ plot(x_est_sf(2, :), '--b')
 legend('y1', 'x est kf', 'velocity')
 %}
 
-%%{
+%{
 figure 13
 hold on
 plot(x_est_kf(1, :), '-r')
 plot(x_est_sf(1, :), '-b')
 legend('x kf', 'x sf')
+%}
+
+
+%
+% system matrix
+
+A = [0, 1; -c/m, -d/m];
+b = [0; 1/m];
+ct = [1, 0];
+
+%sys = ss(A, b, ct);
+
+% measurement vector
+C = [1, 0];
+
+% cov. matrice init values
+P = diag([1 1]);
+
+% process noise
+Q = diag([0.001 0.001]);
+
+% measurement noise
+R = diag(sigm1^2);
+
+% transition matrix
+Phi = expm(A * Ts)
+
+% estimates
+x_est_sys = zeros(2, length(y1));
+x_est_sys(:, 1) = [0; 0];
+
+% Kalman filter
+for k = 2 : length(y1)
+  xs = Phi * x_est_sys(:, k - 1);
+  Ps = Phi * P * Phi' + Q;
+  Kk = Ps * C' * inv(C * Ps * C' + R);
+  x_est_sys(:, k) = xs + Kk * (y1(k) - C * xs);
+  P = (eye(length(xs)) - Kk * C) * Ps;
+end
+
+%{
+figure 21
+hold on
+plot(x_est_sys(1, :), '-r')
+plot(y1, '-b')
+legend('x sys', 'y1')
+%}
+
+%%{
+figure 22
+hold on
+plot(x_est_sys(2, :), '-r')
+plot(x_est_kf(2, :), '-b')
+plot(vtrue, '-k', 'linewidth', 2)
+legend('v sys', 'v kf', 'v true')
 %}
