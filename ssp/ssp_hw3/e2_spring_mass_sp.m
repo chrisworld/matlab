@@ -1,11 +1,14 @@
 clear all;
-close all;
+%close all;
 clc;
 
 % packages for octave
 pkg load control
 
-%
+% plot config
+fig_size_long = [1000, 0, 900, 400];
+
+% --
 % data
 
 load("./angabe/SSP_HW3_EX2.mat")
@@ -19,12 +22,14 @@ d = 0.1;
 % sampling
 fs = 100;
 Ts = 1/fs;
+t = 0 : Ts : length(y1) * Ts - Ts;
 
+% measurement noise
 sigm1 = 0.02;
 
 
-%
-% mixted state estimation
+% --
+% mixted state estimation or state parameter estimation
 
 % system model
 A = @(m) [0, 1, 0; -c/m, -d/m, 0; 0, 0, 0];
@@ -59,17 +64,17 @@ for k = 2 : length(y1)
 
   % Numerical Evaluation of Jacobian
   J = zeros(length(x_est_sp(:, k - 1)));
-  delta = 0.001;
+  delta = 0.01;
   for jj = 1:length(x_est_sp(:, k - 1))
     xt = x_est_sp(:, k - 1);
     
     xt(jj) = x_est_sp(:, k - 1)(jj) + delta;        
-    Phixp = Phi(x_est_sp(3, k - 1)) * xt;
+    Phixp = Phi(xt(3)) * xt;
     
     xt(jj) = x_est_sp(:, k - 1)(jj) - delta;        
-    Phixm = Phi(x_est_sp(3, k - 1)) * xt;
+    Phixm = Phi(xt(3)) * xt;
     
-    J(:,jj) = (Phixp - Phixm) / (2 * delta);
+    J(:, jj) = (Phixp - Phixm) / (2 * delta);
   end
 
   % other kalman equations with EKF
@@ -81,20 +86,34 @@ end
 
 m_est = x_est_sp(3, end)
 
+
+
+% --
+% plots
 %%{
-figure 1
-hold on
-plot(x_est_sp(1, :), '-r')
-plot(y1, '-k', 'linewidth', 2)
-legend('x est')
+figure (1, 'position', fig_size_long)
+plot(t, y1,'LineWidth', 1.5)
+set(gca,'FontSize',12)
+ylabel('Position x [m]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+grid on
+ylim([-1.5, 1.5])
+%print(['pos'],'-dpng', '-S900,400')
+
+figure (2, 'position', fig_size_long)
+plot(t, x_est_sp(2, :), 'LineWidth', 1.5)
+set(gca,'FontSize',12)
+ylabel('Velocity [m/s]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+grid on
+ylim([-1.5, 1.5])
+%print(['velo'],'-dpng', '-S900,400')
+
+figure (3, 'position', fig_size_long)
+plot(t, x_est_sp(3, :), 'LineWidth', 1.5)
+set(gca,'FontSize',12)
+ylabel('Mass [kg]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+grid on
+%print(['mass'],'-dpng', '-S900,400')
 %}
-
-figure 2
-hold on
-plot(x_est_sp(2, :), '-r')
-legend('v')
-
-figure 3
-hold on
-plot(x_est_sp(3, :), '-r')
-legend('m')

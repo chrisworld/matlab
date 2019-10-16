@@ -5,6 +5,9 @@ clc;
 % packages for octave
 pkg load control
 
+% plot config
+fig_size_long = [1000, 0, 900, 400];
+
 %
 % data
 
@@ -19,6 +22,7 @@ d = 0.1;
 % sampling
 fs = 100;
 Ts = 1/fs;
+t = 0 : Ts : length(y1) * Ts - Ts;
 
 %
 % analyze data
@@ -84,17 +88,8 @@ for k = 2 : length(y1)
   P = (eye(length(xs)) - Kk * C) * Ps;
 end
 
-%{
-figure 11
-hold on
-plot(y1, '-r')
-plot(x_est_kf(1, :), '-b')
-plot(x_est_kf(2, :), '--b')
-legend('y1', 'x est kf', 'velocity')
-%}
 
-
-%
+% --
 % sensor fusion
 
 % incorporated in measurement vector
@@ -122,26 +117,8 @@ for k = 2 : length(y1)
   P = (eye(length(xs)) - Kk * C) * Ps;
 end
 
-%{
-figure 12
-hold on
-plot(y2, '-r')
-plot(y3, '-r')
-plot(x_est_sf(1, :), '-b')
-plot(x_est_sf(2, :), '--b')
-legend('y1', 'x est kf', 'velocity')
-%}
 
-%{
-figure 13
-hold on
-plot(x_est_kf(1, :), '-r')
-plot(x_est_sf(1, :), '-b')
-legend('x kf', 'x sf')
-%}
-
-
-%
+% --
 % system matrix
 
 A = [0, 1; -c/m, -d/m];
@@ -178,19 +155,107 @@ for k = 2 : length(y1)
   P = (eye(length(xs)) - Kk * C) * Ps;
 end
 
+
+% plots position
 %{
-figure 21
+figure (11, 'position', fig_size_long)
 hold on
-plot(x_est_sys(1, :), '-r')
-plot(y1, '-b')
-legend('x sys', 'y1')
+plot(t, xtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_kf(1, :), '-b')
+set(gca,'FontSize',12)
+title('Discrete Time State Space Model', 'fontsize', 16)
+ylabel('Position x [m]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('x true', 'x est kf')
+grid on
+%print(['pos'],'-dpng', '-S900,400')
+
+%%{
+figure (21, 'position', fig_size_long)
+hold on
+plot(t, xtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_sf(1, :), '-b')
+set(gca,'FontSize',12)
+title('Sensor Fusion', 'fontsize', 16)
+ylabel('Position x [m]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('x true', 'x est sf')
+grid on
+%print(['pos'],'-dpng', '-S900,400')
+
+%%{
+figure (31, 'position', fig_size_long)
+hold on
+plot(t, xtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_sys(1, :), '-b')
+set(gca,'FontSize',12)
+title('System Matrix', 'fontsize', 16)
+ylabel('Position x [m]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('x true', 'x est sys')
+grid on
+%print(['pos'],'-dpng', '-S900,400')
+%}
+
+
+
+% plots velocity
+%%{
+figure (12, 'position', fig_size_long)
+hold on
+plot(t, vtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_kf(2, :), '-b')
+set(gca,'FontSize',12)
+title('Discrete Time State Space Model', 'fontsize', 16)
+ylabel('Velocity [m/s]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('v true', 'v est kf')
+grid on
+%print(['v_dtss'],'-dpng', '-S900,400')
 %}
 
 %%{
-figure 22
+figure (22, 'position', fig_size_long)
 hold on
-plot(x_est_sys(2, :), '-r')
-plot(x_est_kf(2, :), '-b')
-plot(vtrue, '-k', 'linewidth', 2)
-legend('v sys', 'v kf', 'v true')
+plot(t, vtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_sf(2, :), '-b')
+set(gca,'FontSize',12)
+title('Sensor Fusion', 'fontsize', 16)
+ylabel('Velocity [m/s]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('v true', 'v est sf')
+grid on
+%print(['v_sf'],'-dpng', '-S900,400')
 %}
+
+%%{
+figure (32, 'position', fig_size_long)
+hold on
+plot(t, vtrue, '-k', 'LineWidth', 2)
+plot(t, x_est_sys(2, :), '-b')
+set(gca,'FontSize',12)
+title('System Matrix', 'fontsize', 16)
+ylabel('Velocity [m/s]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('v true', 'v est sys')
+grid on
+%print(['v_sys'],'-dpng', '-S900,400')
+%}
+
+
+% compare
+figure (4, 'position', fig_size_long)
+hold on
+plot(t, vtrue, '-k', 'LineWidth', 3)
+plot(t, x_est_kf(2, :), '-b', 'LineWidth', 1.5)
+plot(t, x_est_sf(2, :), '-m', 'LineWidth', 1.5)
+plot(t, x_est_sys(2, :), '-r', 'LineWidth', 1.5)
+set(gca,'FontSize',12)
+title('Comparison', 'fontsize', 16)
+ylabel('Velocity [m/s]', 'fontsize', 16)
+xlabel('Time [s]', 'fontsize', 16)
+legend('v true', 'v est kf', 'v est sf', 'v est sys')
+xlim([3 10])
+ylim([-1 1])
+grid on
+%print(['v_comp'],'-dpng', '-S900,400')

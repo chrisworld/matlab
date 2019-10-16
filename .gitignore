@@ -1,3 +1,4 @@
+ignore/
 *.png
 octave*
 ssp_examples/
