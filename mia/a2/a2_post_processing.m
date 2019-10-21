@@ -13,7 +13,7 @@ fs = 44100;
 N = 1024;
 
 % simple syntethic test signal
-k = 40.22;
+k = 40;
 A = 3;
 Nx = 2 * N;
 
@@ -24,8 +24,6 @@ t = 0 : 1/fs : Nx/fs-1/fs;
 % signal
 x = A * cos(2 * pi * k / N * [0:Nx-1]');
 
-% frequency
-fk = k * fs / N
 
 % plot
 %{
@@ -69,7 +67,7 @@ X_buff = H * x_buff;
 Y = 20 * log10(2 / N * abs(X_buff(1:end/2+1, 2)));
 
 % plot
-%{
+%%{
 figure(12, 'position', fig_size_long)
 plot(f, Y, 'LineWidth', 1.5)
 set(gca,'FontSize',12)
@@ -86,16 +84,20 @@ print(['fft_simple'],'-dpng', '-S900,400')
 [v, p] = max(Y);
 
 % parabol params
-[alpha_log, beta_log, gamma_log, k_log] = parabol_interp(Y, p);
+[alpha_log, beta_log, gamma_log, k_log] = parabol_interp(Y, p)
 
 disp(['---'])
 disp(['---simple cosine', ])
 disp(['Parabolic Estimation:'])
 
 % parabol estimation vs peak
-f_peak_log = p * fs/N
-f_est_log = 44100/1024 * k_log
+f_real = k * fs / N
+f_peak_log = (p - 1) * fs / N
+f_est_log = (k_log - 1) * fs / N 
 
+disp(['--'])
+
+A_real  = A
 A_peak_log = 10^(Y(p) / 20)
 A_est_log = 10^(beta_log / 20)
 
@@ -120,6 +122,7 @@ file_ext = '.wav';
 % configure spectrogram
 segment_len = 256;
 
+%{
 % run through all audiofiles
 for file_idx = 1 : size(filenames, 1)
 
@@ -150,7 +153,7 @@ for file_idx = 1 : size(filenames, 1)
   Y = 20 * log10(2 / N * abs(X_buff(1:end/2+1, s)));
 
   % plot
-  %%{
+  %{
   figure(20 + file_idx, 'position', fig_size_long)
   plot(f, Y, 'LineWidth', 1.5)
   set(gca,'FontSize',12)
@@ -161,7 +164,7 @@ for file_idx = 1 : size(filenames, 1)
   xlim([200, 500])
   %print(['fft_frame_', int2str(s), '_', filenames(file_idx, :)],'-dpng', '-S900,400')
   print(['fft_zoom_frame_', int2str(s), '_', filenames(file_idx, :)],'-dpng', '-S900,400')
-  %}
+  %%}
 
   % plots spectogram
   %{
@@ -170,7 +173,7 @@ for file_idx = 1 : size(filenames, 1)
   %set(gca,'FontSize',12)
   title([filenames(file_idx, :)], 'fontsize', 18)
   %print(['spec_', filenames(file_idx, :)],'-dpng', '-S900,400')
-  %}
+  %%}
 
   % --
   % parabolic interpolation
@@ -199,6 +202,7 @@ for file_idx = 1 : size(filenames, 1)
   f_i = inst_f(X_buff, p, 1, R, N, fs)
 
 end
+%}
 
 
 
